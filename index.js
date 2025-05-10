@@ -49,6 +49,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const roomsCollection = client.db("reservation").collection("rooms");
+    const usersCollection = client.db("reservation").collection("users");
     // auth related api
     app.post("/jwt", async (req, res) => {
       const user = req.body;
@@ -77,6 +78,43 @@ async function run() {
       } catch (err) {
         res.status(500).send(err);
       }
+    });
+
+    // save a user data in db ==== Update(If available) and impute(new) thats why use PUT
+    app.put("/user", async (req, res) => {
+      const user = req.body;
+      const query = { email: user?.email };
+      // check if user already exists in db
+      const isExist = await usersCollection.findOne(query);
+      if (isExist) {
+        if (user.status === "Requested") {
+          // if existing user try to change his role
+          const result = await usersCollection.updateOne(query, {
+            $set: { status: user?.status },
+          });
+          return res.send(result);
+        } else {
+          // if existing user login again
+          return res.send(isExist);
+        }
+      }
+
+      // save user for the first time
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...user,
+          timestamp: Date.now(),
+        },
+      };
+      const result = await usersCollection.updateOne(query, updateDoc, options);
+      res.send(result);
+    });
+
+    // get all users data from db
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
     });
 
     // Get all rooms from db
@@ -113,6 +151,13 @@ async function run() {
       res.send(result);
     });
 
+    // get a user info by email from db
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.findOne({ email });
+      res.send(result);
+    });
+
     // delete a room
     app.delete("/room/:id", async (req, res) => {
       const id = req.params.id;
@@ -139,3 +184,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Reservation is running on port ${port}`);
 });
+
