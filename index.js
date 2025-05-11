@@ -80,7 +80,7 @@ async function run() {
       }
     });
 
-    // save a user data in db ==== Update(If available) and impute(new) thats why use PUT
+    // save a user data in db
     app.put("/user", async (req, res) => {
       const user = req.body;
       const query = { email: user?.email };
@@ -120,24 +120,33 @@ async function run() {
     // Get all rooms from db
     app.get("/rooms", async (req, res) => {
       const category = req.query.category;
-      // console.log(category);
+      console.log(category);
       let query = {};
       if (category && category !== "null") query = { category };
       const result = await roomsCollection.find(query).toArray();
       res.send(result);
     });
-
-    // Get a single room data from db using _id
-    app.get("/room/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await roomsCollection.findOne(query);
+    // get a user info by email from db
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const result = await usersCollection.findOne({ email });
       res.send(result);
     });
+    //update a user role
+    app.patch("/users/update/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const query = { email };
+      const updateDoc = {
+        $set: { ...user, timestamp: Date.now() },
+      };
+      const result = await usersCollection.updateOne(query, updateDoc);
+      res.send(result);
+    });
+
     // Save a room data in db
     app.post("/room", async (req, res) => {
       const roomData = req.body;
-      console.log(roomData);
       const result = await roomsCollection.insertOne(roomData);
       res.send(result);
     });
@@ -151,18 +160,19 @@ async function run() {
       res.send(result);
     });
 
-    // get a user info by email from db
-    app.get("/user/:email", async (req, res) => {
-      const email = req.params.email;
-      const result = await usersCollection.findOne({ email });
-      res.send(result);
-    });
-
     // delete a room
     app.delete("/room/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await roomsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Get a single room data from db using _id
+    app.get("/room/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await roomsCollection.findOne(query);
       res.send(result);
     });
 
@@ -178,10 +188,9 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Hello from Reservation Server..");
+  res.send("Hello from StayVista Server..");
 });
 
 app.listen(port, () => {
-  console.log(`Reservation is running on port ${port}`);
+  console.log(`StayVista is running on port ${port}`);
 });
-
