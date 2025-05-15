@@ -14,7 +14,7 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://reservation-server-rho.vercel.app/",
+    "https://reservation-ui-beta.vercel.app/",
   ],
   credentials: true,
   optionSuccessStatus: 200,
