@@ -11,7 +11,11 @@ const port = process.env.PORT || 8000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // middleware
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://reservation-ui-beta.vercel.app/",
+  ],
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -475,9 +479,9 @@ async function run() {
 run().catch(console.dir);
 
 app.get("/", (req, res) => {
-  res.send("Hello from StayVista Server..");
+  res.send("Hello from Reservation_hotel_booking Server..");
 });
 
 app.listen(port, () => {
-  console.log(`StayVista is running on port ${port}`);
+  console.log(`Reservation_hotel_booking is running on port ${port}`);
 });
