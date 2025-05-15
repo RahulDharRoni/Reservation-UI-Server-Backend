@@ -10,16 +10,16 @@ const port = process.env.PORT || 8000;
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // middleware
-const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://reservation-ui-seven.vercel.app/",
-  ],
-  credentials: true,
-  optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+// const corsOptions = {
+//   origin: [
+//     "http://localhost:5173",
+//     "http://localhost:5174",
+//     "https://reservation-ui-seven.vercel.app/",
+//   ],
+//   credentials: true,
+//   optionSuccessStatus: 200,
+// };
+app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());
