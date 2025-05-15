@@ -12,8 +12,8 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // middleware
 const corsOptions = {
   origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
+    // "http://localhost:5173",
+    // "http://localhost:5174",
     "https://reservation-ui-beta.vercel.app",
     "https://reservation-ui-git-main-desyroni1gmailcoms-projects.vercel.app",
   ],
