@@ -11,16 +11,21 @@ const port = process.env.PORT || 8000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 // middleware
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://reservation-ui-seven.vercel.app",
-    "https://reservation-ui-beta.vercel.app",
-    "https://reservation-ui-git-main-desyroni1gmailcoms-projects.vercel.app",
-    "https://js.stripe.com", // Stripe JS origin
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://reservation-ui-seven.vercel.app",
+      "https://reservation-ui-beta.vercel.app",
+      "https://reservation-ui-git-main-desyroni1gmailcoms-projects.vercel.app",
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
